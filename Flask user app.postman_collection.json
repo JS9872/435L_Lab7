@@ -1,0 +1,40 @@
+{
+  "info": {
+    "name": "Flask user app",
+    "description": "EECE 435L Lab 5 — Joey Sade (202305993). Run requests in this order: Add, Get all, Get by ID, Update, Delete. Add automatically saves the new user_id as a collection variable.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{"key": "user_id", "value": "1"}],
+  "item": [
+    {
+      "name": "Add user",
+      "event": [{"listen": "test", "script": {"exec": ["pm.test('User created', () => pm.response.to.have.status(201));", "const user = pm.response.json();", "pm.test('Created user has an ID', () => pm.expect(user.user_id).to.be.a('number'));", "pm.collectionVariables.set('user_id', user.user_id);"]}}],
+      "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Joey Sade\",\n  \"email\": \"joey.sade@example.com\",\n  \"phone\": \"03000000\",\n  \"address\": \"Beirut\",\n  \"country\": \"Lebanon\"\n}"}, "url": "{{base_url}}/api/users/add"},
+      "response": [{"name": "Created user", "originalRequest": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"name\":\"Joey Sade\",\"email\":\"joey.sade@example.com\",\"phone\":\"03000000\",\"address\":\"Beirut\",\"country\":\"Lebanon\"}"}, "url": "{{base_url}}/api/users/add"}, "status": "Created", "code": 201, "header": [{"key": "Content-Type", "value": "application/json"}], "body": "{\"address\":\"Beirut\",\"country\":\"Lebanon\",\"email\":\"joey.sade@example.com\",\"name\":\"Joey Sade\",\"phone\":\"03000000\",\"user_id\":1}"}]
+    },
+    {
+      "name": "Get all users",
+      "event": [{"listen": "test", "script": {"exec": ["pm.test('Users returned', () => pm.response.to.have.status(200));", "pm.test('Response is a list', () => pm.expect(pm.response.json()).to.be.an('array'));"]}}],
+      "request": {"method": "GET", "url": "{{base_url}}/api/users"},
+      "response": [{"name": "Users list", "originalRequest": {"method": "GET", "url": "{{base_url}}/api/users"}, "status": "OK", "code": 200, "header": [{"key": "Content-Type", "value": "application/json"}], "body": "[{\"address\":\"Beirut\",\"country\":\"Lebanon\",\"email\":\"joey.sade@example.com\",\"name\":\"Joey Sade\",\"phone\":\"03000000\",\"user_id\":1}]"}]
+    },
+    {
+      "name": "Get user by ID",
+      "event": [{"listen": "test", "script": {"exec": ["pm.test('User returned', () => pm.response.to.have.status(200));", "pm.test('Correct user ID', () => pm.expect(pm.response.json().user_id).to.eql(Number(pm.collectionVariables.get('user_id'))));"]}}],
+      "request": {"method": "GET", "url": "{{base_url}}/api/users/{{user_id}}"},
+      "response": [{"name": "One user", "originalRequest": {"method": "GET", "url": "{{base_url}}/api/users/{{user_id}}"}, "status": "OK", "code": 200, "header": [{"key": "Content-Type", "value": "application/json"}], "body": "{\"address\":\"Beirut\",\"country\":\"Lebanon\",\"email\":\"joey.sade@example.com\",\"name\":\"Joey Sade\",\"phone\":\"03000000\",\"user_id\":1}"}]
+    },
+    {
+      "name": "Update user",
+      "event": [{"listen": "test", "script": {"exec": ["pm.test('User updated', () => pm.response.to.have.status(200));", "pm.test('Address changed', () => pm.expect(pm.response.json().address).to.eql('Hamra, Beirut'));"]}}],
+      "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"user_id\": {{user_id}},\n  \"name\": \"Joey Sade\",\n  \"email\": \"joey.sade@example.com\",\n  \"phone\": \"03000000\",\n  \"address\": \"Hamra, Beirut\",\n  \"country\": \"Lebanon\"\n}"}, "url": "{{base_url}}/api/users/update"},
+      "response": [{"name": "Updated user", "originalRequest": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"user_id\":1,\"name\":\"Joey Sade\",\"email\":\"joey.sade@example.com\",\"phone\":\"03000000\",\"address\":\"Hamra, Beirut\",\"country\":\"Lebanon\"}"}, "url": "{{base_url}}/api/users/update"}, "status": "OK", "code": 200, "header": [{"key": "Content-Type", "value": "application/json"}], "body": "{\"address\":\"Hamra, Beirut\",\"country\":\"Lebanon\",\"email\":\"joey.sade@example.com\",\"name\":\"Joey Sade\",\"phone\":\"03000000\",\"user_id\":1}"}]
+    },
+    {
+      "name": "Delete user",
+      "event": [{"listen": "test", "script": {"exec": ["pm.test('User deleted', () => pm.response.to.have.status(200));", "pm.test('Deletion confirmed', () => pm.expect(pm.response.json().status).to.eql('User deleted successfully'));"]}}],
+      "request": {"method": "DELETE", "url": "{{base_url}}/api/users/delete/{{user_id}}"},
+      "response": [{"name": "Deleted user", "originalRequest": {"method": "DELETE", "url": "{{base_url}}/api/users/delete/{{user_id}}"}, "status": "OK", "code": 200, "header": [{"key": "Content-Type", "value": "application/json"}], "body": "{\"status\":\"User deleted successfully\"}"}]
+    }
+  ]
+}
